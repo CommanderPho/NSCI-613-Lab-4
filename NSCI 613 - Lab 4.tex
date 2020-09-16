@@ -1,0 +1,193 @@
+\documentclass[12pt]{article}
+\usepackage[usenames]{color} %used for font color
+\usepackage{amssymb}
+\usepackage{pho-equation}
+\usepackage[assignment]{pho-format}
+
+%\usepackage{url} % Formatting packages
+\usepackage{hyperref} % Required for adding links and customizing them
+\definecolor{linkcolour}{rgb}{0,0.2,0.6} % Link color
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour} % Set link colors throughout the document
+
+
+\newcommand{\githubRepoNameFormat}[1]{ \textsl{\footnotesize#1} }
+%\github{real-URL}{display-name}
+%\newcommand{\github}[2]{\faGithub\href{#1}{#2}}
+\newcommand{\github}[2]{\href{#1}{\githubRepoNameFormat{#2}}}
+
+%\githubFromShortName{githubUser}{repoName}{displayName}
+\newcommand{\githubFromShortName}[3]{\github{https://github.com/#1/#2}{#3}}
+
+%\phoGithub{repoName}{displayName}
+%\newcommand{\phoGithub}[2]{\githubFromShortName{CommanderPho}{#1}{#2 (Private)}}
+\newcommand{\phoGithub}[2]{\githubFromShortName{CommanderPho}{#1}{#2}}
+
+
+
+\title{NSCI 613 - Lab 4}
+\author{\phoName}
+\subject{ NSCI 613 - Neurophysiology and Computational Neuroscience }
+%\studentID{2437149}
+
+
+\begin{document}
+\maketitle
+\vfill
+All source code for this assignment is available in my Github repository: \phoGithub{NSCI-613-Lab-3}{https://github.com/CommanderPho/NSCI-613-Lab-3}
+
+\updateheaders
+\clearpage
+
+%\slntParagraph{ Increasing the delay of the second current pulse from $9[ms]$ up in $0.1[ms]$ increments, we find that a delay of approximately $10.3[ms]$ is the minimum refractory time between action potential events evoked by a current pulse of the same magnitude. See Figure \ref{fig:P1} for the voltage curve.}
+
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=0.9\textwidth]{Results/P1}
+%\caption{\label{fig:P1} Voltage Plots used to determine the minimum refractory time between action potential events for P1. }
+%\end{figure}
+
+\newcommand*\mgate{$\mathcolor{charcoal}{\codeStyleVar{vshift\_m}}$}
+
+\newcommand*\hgate{$\mathcolor{R_d}{\codeStyleVar{vshift\_h}}$}
+
+\newcommand*\ngate{$\mathcolor{B_l}{\codeStyleVar{vshift\_n}}$}
+
+% P1
+\Question{Neurons in Action - Na and K Channel Kinetics tutorial}
+
+\begin{given}
+	\gitem{ $\tdefn{\mgate{}}{Na+ Activation Gate}$ }
+	\gitem{ $\tdefn{\hgate{}}{Na+ Inactivation Gate}$ }
+	\gitem{ $\tdefn{\ngate{}}{K+ Activation Gate}$ }
+\end{given}
+
+
+%%%%%%%%%% Nav 1.6 Subtype
+\section*{Nav 1.6 subtype: $\mgate{} = 14\utext{mV}$ , $\hgate{} = 10 \utext{mV}$ }
+
+%% P1.A - Nav1.6
+\subQuestion{Determining threshold amplitude that generates an AP for Nav1.6}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Results/1a-m14-h10-n0-0528}
+\caption{\label{Fig:1a0}Plots for $\mgate{} = 14 \utext{mV}$, $\hgate{} = 10 \utext{mV}$, $\ngate{} = 0 \utext{mV}$ used to determine the new threshold current amplitude of $0.528 \utext{nA}$ for Nav 1.6.}
+\end{figure}
+
+\par The smallest amplitude of current that could trigger an AP for these parameters was \sln{$0.528 \utext{nA}$} which is plotted in Figure \ref{Fig:1a0}.
+
+
+
+%% P1.B - Nav1.6
+\subQuestion{Gating variables and inactivation functions for Nav1.6}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Results/1a-default-Na-Kinetics-m0-h0-n0-011}
+\caption{\label{Fig:1a-ref-011}Plots for the default Na+ channel kinetics ($\mgate{} = 0 \utext{mV}$, $\hgate{} = 0 \utext{mV}$, $\ngate{} = 0 \utext{mV}$) stimulated at the threshold current amplitude of $0.11 \utext{nA}$.}
+\end{figure}
+
+\slntParagraph{Comparing the Nav 1.6 subtype (Figure \ref{Fig:1a0}) with the default Na+ channel kinetics (Figure \ref{Fig:1a-ref-011}) we can see that the sodium activation gating variable $\mgate{}$ curve was shifted to the right, meaning it would be less open/active for a given voltage. This manifests on our current plot as a notably slower rise in the sodium current. The sodium inactivation gating variable \hgate{} was also shifted in the to the right (in the positive direction), meaning lower levels of sodium inactivation at rest (See the high t=0 value of the red line in the second subplot from the bottom in Figure \ref{Fig:1a0}) as well as a delayed inactivation of sodium channels were observed for the same potentials. This led to increased amplitude of APs, as well as a longer time spent at higher membrane voltages. It was primarily the slower sodium activation dynamics that competed with the K+ current to determine if an AP was fired. More current had to be applied to attain an AP in the Nav 1.6 case to compensate for the slower Na+ activation to compete with the same potassium current. }
+
+\begin{tabular}{l|cr}
+Gate Var. & Shift Dir & Consequence \\ \hline
+\mgate{} & Right & Less activation/open channels for the same voltage \\
+\hgate{} & Right & Reduced/delayed inactivation of Na+ channels \\
+\ngate{} & - & -
+\end{tabular}
+
+
+%% P1.C - Nav1.6
+\subQuestion{Attempting to compensate with K+ channel for Nav1.6}
+
+\slntParagraph{No, it does not appear to be possible to induce an AP by adjusting $\ngate{}$ for a stimulation current of $0.11 \utext{nA}$.}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Results/1c-m14-h10-n15-0235}
+\caption{\label{Fig:1c0}Plots for $\mgate{} = 14 \utext{mV}$, $\hgate{} = 10 \utext{mV}$, $\ngate{} = 15 \utext{mV}$.}
+\end{figure}
+
+%TODO: Finish "Why" part of question.
+\par The lowest threshold current amplitude possible appears to be \slntParagraph{$0.235 \utext{nA}$ with $\ngate{} = 15$} This is shown in Figure \ref{Fig:1c0}.
+
+
+
+
+\clearpage
+%%%%%%%%%% Nav 1.1 Subtype
+\section*{Nav 1.1 subtype: $\mgate{} = 7 \utext{mV}$, $\hgate{} = -9.5 \utext{mV}$}
+% Reset the counter as a hack so "a", "b", "c" are generated again:
+\setcounter{subQuestionCounter}{0} 
+
+
+%% P1.A - Nav1.1
+\subQuestion{Determining threshold amplitude that generates an AP for Nav1.1}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Results/1a-m7-h95-n0-06}
+\caption{\label{Fig:1a1} Plots for $\mgate{} = 7 \utext{mV}$, $\hgate{} = -9.5 \utext{mV}$, $\ngate{} = 0 \utext{mV}$ used to determine the threshold current amplitude of $0.6 \utext{nA}$ for Nav 1.1.}
+\end{figure}
+
+\par The smallest amplitude of current that could trigger an AP for these parameters was \sln{$0.6 \utext{nA}$} where it reaches $11.2 \utext{mV}$ at its peak. This is plotted in Figure \ref{Fig:1a1}.
+
+
+
+%% P1.B - Nav1.1
+\subQuestion{Gating variables and inactivation functions for Nav1.1}
+
+\slntParagraph{Comparing the Nav 1.1 subtype (Figure \ref{Fig:1a1}) with the default Na+ channel kinetics (Figure \ref{Fig:1a-ref-011})  we can see that the sodium activation gating variable $\mgate{}$ curve was again shifted to the right, leaving it less open/active for a given voltage. Unlike the Nav 1.6 case, the sodium inactivation gating variable \hgate{} was shifted in the opposite direction (to the left, in the negative direction). This resulted in faster inactivation of the sodium channels than in the default kinetics case, meaning even more sustained applied current was required to reach an AP than for the Nav 1.6 subtype. }
+
+\begin{tabular}{l|cr}
+Gate Var. & Shift Dir & Consequence \\ \hline
+\mgate{} & Right & Less activation/open channels for the same voltage \\
+\hgate{} & Left & Higher/Sooner inactivation of Na+ channels \\
+\ngate{} & - & -
+\end{tabular}
+
+
+%% P1.C - Nav1.1
+\subQuestion{Attempting to compensate with K+ channel for Nav1.1}
+
+%TODO: Finish "Why" part of question.
+\slntParagraph{Yes adjusting $\ngate{} = 45 \utext{mV}$ induces an AP with a peak around $10 \utext{mV}$ for an applied stimulation current of $0.11 \utext{nA}$.}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Results/1c-m7-h95-n45-011}
+\caption{Plots for $\mgate{} = 7 \utext{mV}$, $\hgate{} = -9.5 \utext{mV}$, $\ngate{} = 45 \utext{mV}$.}
+\end{figure}
+
+
+%% Defaults:
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Results/1a-default-Na-Kinetics-m0-h0-n0-0528}
+\caption{Plots for $\mgate{} = 0 \utext{mV}$, $\hgate{} = 0 \utext{mV}$, $\ngate{} = 0 \utext{mV}$ stimulated at the higher current amplitude of $0.528 \utext{nA}$, which is the threshold current amplitude for the Nav1.6 Subtype.}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=0.9\textwidth]{Results/1a-1}
+%\caption{\label{fig:P1a1} Plot of axon diameter vs. conductance velocity }
+%\end{figure}
+
+
+\end{document}
