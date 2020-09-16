@@ -107,50 +107,7 @@ for i=1:num_active_indices
 	IzTracesInfo.title{active_i} = sprintf('%s for (%s)', 'M-type K+ Current', legend_strings{active_i});
 	
 	[voltageTracesInfo] = fnPlotData(num_active_indices, i, active_i, voltageTracesInfo, curr_time_t_data, curr_Vm_data, plot_mode);
-	
-	[voltageTracesInfo] = fnPlotData(num_active_indices, i, active_i, voltageTracesInfo, curr_time_t_data, curr_Vm_data, plot_mode);
-	
-% 	if strcmp(plot_mode, 'subplot')
-% 		voltageTracesInfo.ax_handle(i) = subplot(num_active_indices,1,i);
-% 	elseif strcmp(plot_mode, 'tiled')
-% 		voltageTracesInfo.ax_handle(i) = nexttile;
-% 	else
-% 		error('Unhandled case!')
-% 	end
-% 	curr_plot_handle = plot(curr_time_t_data, curr_Vm_data);
-% 	xlim([voltageTracesInfo.lim(1),voltageTracesInfo.lim(2)]);
-% 	ylim([voltageTracesInfo.lim(3),voltageTracesInfo.lim(4)]);
-% 	
-% 	ylabel(voltageTracesInfo.ylabel);
-% 	
-% 	title(voltageTracesInfo.title{active_i});
-% 	if is_last_iteration
-% 		xlabel(voltageTracesInfo.xlabel); % Only add the xlabel to the last (bottommost) plot
-% 	else
-% 		fnPostSubplotCleanup();
-% 	end
-	
-	
-	
-	if strcmp(plot_mode, 'subplot')
-		IzTracesInfo.ax_handle(i) = subplot(num_active_indices,1,i);
-	elseif strcmp(plot_mode, 'tiled')
-		IzTracesInfo.ax_handle(i) = nexttile;
-	else
-		error('Unhandled case!')
-	end
-	
-	curr_plot_handle = plot(curr_time_t_data, curr_Iz_data);
-	xlim([IzTracesInfo.lim(1),IzTracesInfo.lim(2)]);
-	ylim([IzTracesInfo.lim(3),IzTracesInfo.lim(4)]);
-	ylabel(IzTracesInfo.ylabel);
-	title(IzTracesInfo.title{active_i});
-	if is_last_iteration
-		xlabel(IzTracesInfo.xlabel);
-	else
-		fnPostSubplotCleanup();
-	end
-	
+	[IzTracesInfo] = fnPlotData(num_active_indices, i, active_i, IzTracesInfo, curr_time_t_data, curr_Iz_data, plot_mode);
 	
 end
 

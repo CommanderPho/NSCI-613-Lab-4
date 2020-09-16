@@ -7,7 +7,8 @@
 % The portion of the problem I'm working on.
 % ProblemRunIndex = 1; % varying gM
 
-ProblemRunIndex = 2; % varying gNaP
+clear all;
+ProblemRunIndex = 1; % varying gNaP
 
 % time span of simulation
 tspan = [0 2000];
