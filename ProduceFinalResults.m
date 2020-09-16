@@ -2,7 +2,6 @@
 % Pho Hale
 % After calling run_GolombNeuron_Ca0.m:
 
-
 ProblemRunIndex = 1;
 
 % M-type K+ Current:
@@ -20,6 +19,31 @@ voltageTracesInfo.xlabel = 'time [msec]';
 % voltageTracesInfo.ylabel = 'membrane voltage [mV]';
 voltageTracesInfo.ylabel = 'V_{m} [mV]';
 voltageTracesInfo.title = legend_strings;
+	
+% INa Current:
+[INaTracesInfo.lim] = fnFindSeriesBounds(time_t, INaTraces, false);
+INaTracesInfo.xlabel = 'time (msec)';
+INaTracesInfo.ylabel = 'I_{Na+} [\mu A/cm^{2}]';
+INaTracesInfo.title = legend_strings;
+
+% IKdr Current:
+[IKdrTracesInfo.lim] = fnFindSeriesBounds(time_t, IKdrTraces, false);
+IKdrTracesInfo.xlabel = 'time (msec)';
+IKdrTracesInfo.ylabel = 'I_{Kdr} [\mu A/cm^{2}]';
+IKdrTracesInfo.title = legend_strings;
+
+% INaP Current:
+[INaPTracesInfo.lim] = fnFindSeriesBounds(time_t, INaPTraces, false);
+INaPTracesInfo.xlabel = 'time (msec)';
+INaPTracesInfo.ylabel = 'I_{NaP} [\mu A/cm^{2}]';
+INaPTracesInfo.title = legend_strings;
+
+% IA Current:
+[IATracesInfo.lim] = fnFindSeriesBounds(time_t, IATraces, false);
+IATracesInfo.xlabel = 'time (msec)';
+IATracesInfo.ylabel = 'I_{A} [\mu A/cm^{2}]';
+IATracesInfo.title = legend_strings;
+
 
 % [FigH_MembraneVoltage] = fnPlotInteractiveSlider(time_t, voltageTraces, FigH_MembraneVoltage, K_Current_SeriesConfigs);
 
@@ -57,27 +81,56 @@ for i=1:num_active_indices
 	curr_Vm_data = voltageTraces{active_i};
 	curr_Iz_data = IzTraces{active_i};
 	
-	% Plot the current data
-	if strcmp(plot_mode, 'subplot')
-		voltageTracesInfo.ax_handle(i) = subplot(num_active_indices,1,i);
-	elseif strcmp(plot_mode, 'tiled')
-% 		nexttile(t,i)
-		voltageTracesInfo.ax_handle(i) = nexttile;
-	else
-		error('Unhandled case!')
-	end
-	curr_plot_handle = plot(curr_time_t_data, curr_Vm_data);
-	xlim([voltageTracesInfo.lim(1),voltageTracesInfo.lim(2)]);
-	ylim([voltageTracesInfo.lim(3),voltageTracesInfo.lim(4)]);
+	%% UPDATE
+% 	INaTracesInfo
+% IKdrTracesInfo
+% INaPTracesInfo
+% IATracesInfo
+% 	figure(2)
+% 	plot(t,INa)
+% 	hold on
+% 	plot(t,IKdr)
+% 	plot(t,INaP)
+% 	plot(t,Iz)
+% 	plot(t,IA)
+% 	plot(tspan,[0 0],'k-')
+% 	legend('INa','IKdr','INaP','IKM', 'IKA', 'zero')
+% 	ylim([-5 5])
+% 	xlabel('time (msec)')
+% 	ylabel('ionic currents (microA/cm2)')
+% 	hold off
+
+
+	%% Plot the current data
 	
-	ylabel(voltageTracesInfo.ylabel);
 	voltageTracesInfo.title{active_i} = sprintf('%s for (%s)', 'Membrane Voltage', legend_strings{active_i});
-	title(voltageTracesInfo.title{active_i});
-	if is_last_iteration
-		xlabel(voltageTracesInfo.xlabel);
-	else
-		fnPostSubplotCleanup();
-	end
+	IzTracesInfo.title{active_i} = sprintf('%s for (%s)', 'M-type K+ Current', legend_strings{active_i});
+	
+	[voltageTracesInfo] = fnPlotData(num_active_indices, i, active_i, voltageTracesInfo, curr_time_t_data, curr_Vm_data, plot_mode);
+	
+	[voltageTracesInfo] = fnPlotData(num_active_indices, i, active_i, voltageTracesInfo, curr_time_t_data, curr_Vm_data, plot_mode);
+	
+% 	if strcmp(plot_mode, 'subplot')
+% 		voltageTracesInfo.ax_handle(i) = subplot(num_active_indices,1,i);
+% 	elseif strcmp(plot_mode, 'tiled')
+% 		voltageTracesInfo.ax_handle(i) = nexttile;
+% 	else
+% 		error('Unhandled case!')
+% 	end
+% 	curr_plot_handle = plot(curr_time_t_data, curr_Vm_data);
+% 	xlim([voltageTracesInfo.lim(1),voltageTracesInfo.lim(2)]);
+% 	ylim([voltageTracesInfo.lim(3),voltageTracesInfo.lim(4)]);
+% 	
+% 	ylabel(voltageTracesInfo.ylabel);
+% 	
+% 	title(voltageTracesInfo.title{active_i});
+% 	if is_last_iteration
+% 		xlabel(voltageTracesInfo.xlabel); % Only add the xlabel to the last (bottommost) plot
+% 	else
+% 		fnPostSubplotCleanup();
+% 	end
+	
+	
 	
 	if strcmp(plot_mode, 'subplot')
 		IzTracesInfo.ax_handle(i) = subplot(num_active_indices,1,i);
@@ -90,12 +143,10 @@ for i=1:num_active_indices
 	curr_plot_handle = plot(curr_time_t_data, curr_Iz_data);
 	xlim([IzTracesInfo.lim(1),IzTracesInfo.lim(2)]);
 	ylim([IzTracesInfo.lim(3),IzTracesInfo.lim(4)]);
-	xlabel(IzTracesInfo.xlabel);
 	ylabel(IzTracesInfo.ylabel);
-	IzTracesInfo.title{active_i} = sprintf('%s for (%s)', 'M-type K+ Current', legend_strings{active_i});
 	title(IzTracesInfo.title{active_i});
 	if is_last_iteration
-		xlabel(voltageTracesInfo.xlabel);
+		xlabel(IzTracesInfo.xlabel);
 	else
 		fnPostSubplotCleanup();
 	end
@@ -117,6 +168,29 @@ should_export_png = true;
 
 fnSaveFigureForExport(t, fullfile(base_export_path,'2-1'), should_export_fig, should_export_pdf, should_export_png);
 
+function [tracesInfo] = fnPlotData(num_active_indices, i, active_i, tracesInfo, x_data, y_data, plot_mode)
+	is_last_iteration = (num_active_indices == i);
+	if strcmp(plot_mode, 'subplot')
+		tracesInfo.ax_handle(i) = subplot(num_active_indices,1,i);
+	elseif strcmp(plot_mode, 'tiled')
+		tracesInfo.ax_handle(i) = nexttile;
+	else
+		error('Unhandled case!')
+	end
+	curr_plot_handle = plot(x_data, y_data);
+	xlim([tracesInfo.lim(1),tracesInfo.lim(2)]);
+	ylim([tracesInfo.lim(3),tracesInfo.lim(4)]);
+	
+	ylabel(tracesInfo.ylabel);
+	
+	title(tracesInfo.title{active_i});
+	if is_last_iteration
+		xlabel(tracesInfo.xlabel); % Only add the xlabel to the last (bottommost) plot
+	else
+		fnPostSubplotCleanup();
+	end
+
+end
 
 function [export_result] = fnSaveFigureForExport(fig_h, figPath, should_export_fig, should_export_pdf, should_export_png)
 	% fnSaveFigureForExport: performs export to disk of a provided figure.
@@ -147,10 +221,6 @@ function [export_result] = fnSaveFigureForExport(fig_h, figPath, should_export_f
 		% Requires R2020a or later
 		exportgraphics(fig_h, export_result.pdf,'ContentType','vector');
 	end
-
-	
-	
-	
 
 end
 

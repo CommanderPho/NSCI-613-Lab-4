@@ -4,6 +4,11 @@
 %to Somatic Bursting in CA1 Pyramidal Cells: Combined Experimental
 % and Modeling Study, J Neurophysiology, 2006
 
+% The portion of the problem I'm working on.
+% ProblemRunIndex = 1; % varying gM
+
+ProblemRunIndex = 2; % varying gNaP
+
 % time span of simulation
 tspan = [0 2000];
 
@@ -22,21 +27,35 @@ t_on = 100;    % time current pulse turns on
 t_off = 2000;  % time current pulse turns off
 
 % set conductances
-gNaP=0.0; % persistent Na+ conductance
-
-gM_vec = 0:0.1:1.5;  % M-type K+ conductance
-
-num_iterations = length(gM_vec);
+if ProblemRunIndex == 1
+	gNaP=0.0; % persistent Na+ conductance
+	gM_vec = 0:0.1:1.5;  % M-type K+ conductance
+	num_iterations = length(gM_vec);
+elseif ProblemRunIndex == 2
+	gM = 1; % M-type K+ conductance
+	gNaP_vec = 0:0.1:1.5; % persistent Na+ conductance
+	num_iterations = length(gNaP_vec);
+else
+	error('Unhandled')
+end
 
 % Pre-allocate:
 spikeFrequency_last = zeros(num_iterations, 1);
 spikeCounts = zeros(num_iterations, 1);
 
-
 for i = 1:num_iterations
 	
-	gM=gM_vec(i);   % M-type K+ conductance
-	curr_description_string = sprintf('M-type K+ conductance gM = %.2g', gM);
+	if ProblemRunIndex == 1
+		gM=gM_vec(i);   % M-type K+ conductance
+% 		curr_description_string = sprintf('M-type K+ conductance gM = %.2g', gM);
+		legend_strings{i} = sprintf('gM: %.2g', gM_vec(i));
+	elseif ProblemRunIndex == 2
+		gNaP=gNaP_vec(i);   % Persistent Na+ conductance
+% 		curr_description_string = sprintf('Persistent Na+ conductance gNaP = %.2g', gNaP);
+		legend_strings{i} = sprintf('gNaP: %.2g', gNaP_vec(i));
+	else
+		error('Unhandled')
+	end
 	
 	% set up for simulation
 	options = odeset('MaxStep',1);
@@ -98,6 +117,12 @@ for i = 1:num_iterations
 	voltageTraces{i} = VVs;
 	IzTraces{i} = Iz;
 	
+	INaTraces{i} = INa;
+	IKdrTraces{i} = IKdr;
+	INaPTraces{i} = INaP;
+	IATraces{i} = IA;
+	
+	
 % 	% plot Voltage vs time
 % 	figure(1)
 % 	hold on;
@@ -132,45 +157,54 @@ for i = 1:num_iterations
 end
 
 % Build a table from the results for easy browsing of the different variables as a function of iteration and current.
-resultsTable = table(gM_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gM','spikeCounts','spikeFrequency_last'});
 
-figure(4)
-hold off
 
-figure(5)
-hold off
-
-for i = 1:num_iterations
-% 	curr_description_string = sprintf('M-type K+ conductance gM = %f', gM_vec(i)); % M-type K+ conductance
-	curr_description_string = sprintf('gM: %.2g', gM_vec(i)); % M-type K+ conductance
-	legend_strings{i} = curr_description_string;
-	
-% 	iteration_range = (i * ones([size(time_t{i},1), 5]));
-	iteration_range = (i * ones(size(time_t{i})));
-
-	figure(4)
-	plot3(time_t{i}, iteration_range, voltageTraces{i},'MarkerFaceColor','auto');
-	hold on;
-	
-	figure(5)
-	plot3(time_t{i}, iteration_range, IzTraces{i},'MarkerFaceColor','auto');
-	hold on;
-
+if ProblemRunIndex == 1
+	resultsTable = table(gM_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gM','spikeCounts','spikeFrequency_last'});
+elseif ProblemRunIndex == 2
+	resultsTable = table(gNaP_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gM','spikeCounts','spikeFrequency_last'});
+else
+	error('Unhandled')
 end
 
-figure(4)
-xlabel('time (msec)')
-ylabel('membrane voltage (mV)')
-zlabel('M-type K+ conductance gM')
-legend(legend_strings)
-title('Membrane Voltage Plot for varied gM')
 
-figure(5)
-xlabel('time (msec)')
-ylabel('M-type K+ current (microA/cm2)')
-zlabel('M-type K+ conductance gM')
-legend(legend_strings)
-title('M-type K+ current Plot for varied gM')
+% figure(4)
+% hold off
+% 
+% figure(5)
+% hold off
+% 
+% for i = 1:num_iterations
+% % 	curr_description_string = sprintf('M-type K+ conductance gM = %f', gM_vec(i)); % M-type K+ conductance
+% % 	curr_description_string = sprintf('gM: %.2g', gM_vec(i)); % M-type K+ conductance
+% % 	legend_strings{i} = curr_description_string;
+% 	
+% % 	iteration_range = (i * ones([size(time_t{i},1), 5]));
+% 	iteration_range = (i * ones(size(time_t{i})));
+% 
+% 	figure(4)
+% 	plot3(time_t{i}, iteration_range, voltageTraces{i},'MarkerFaceColor','auto');
+% 	hold on;
+% 	
+% 	figure(5)
+% 	plot3(time_t{i}, iteration_range, IzTraces{i},'MarkerFaceColor','auto');
+% 	hold on;
+% 
+% end
+% 
+% figure(4)
+% xlabel('time (msec)')
+% ylabel('membrane voltage (mV)')
+% zlabel('M-type K+ conductance gM')
+% legend(legend_strings)
+% title('Membrane Voltage Plot for varied gM')
+% 
+% figure(5)
+% xlabel('time (msec)')
+% ylabel('M-type K+ current (microA/cm2)')
+% zlabel('M-type K+ conductance gM')
+% legend(legend_strings)
+% title('M-type K+ current Plot for varied gM')
 
 % 
 % figure(4)
