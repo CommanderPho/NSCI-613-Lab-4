@@ -123,6 +123,7 @@ for i = 1:num_iterations
 	INaPTraces{i} = INaP;
 	IATraces{i} = IA;
 	
+% 	{INaTraces, IKdrTraces, INaPTraces, IATraces}
 	
 % 	% plot Voltage vs time
 % 	figure(1)
