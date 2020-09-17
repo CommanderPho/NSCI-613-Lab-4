@@ -2,8 +2,15 @@
 % Pho Hale
 % After calling run_GolombNeuron_Ca0.m:
 
-ProblemRunIndex = 1;
-should_plot_other_ionic_currents = true;
+% ProblemRunIndex = 1;
+
+if ProblemRunIndex == 1
+	should_plot_other_ionic_currents = false;
+elseif ProblemRunIndex == 2
+	should_plot_other_ionic_currents = true;
+else
+	error('Undefined case');
+end
 
 % M-type K+ Current:
 [IzTracesInfo.lim] = fnFindSeriesBounds(time_t, IzTraces, false);
@@ -11,8 +18,6 @@ IzTracesInfo.xlabel = 'time (msec)';
 % IzTracesInfo.ylabel = 'M-type K+ current [\mu A/cm^{2}]';
 IzTracesInfo.ylabel = 'I_{MK+} [\mu A/cm^{2}]';
 IzTracesInfo.title = legend_strings;
-
-% [FigH_K_Current] = fnPlotInteractiveSlider(time_t, IzTraces, FigH_K_Current, K_Current_SeriesConfigs);
 
 % Membrane Voltage:
 [voltageTracesInfo.lim] = fnFindSeriesBounds(time_t, voltageTraces, false);
@@ -29,37 +34,11 @@ OtherCurrentTracesInfo.ylabel = 'Other Ionic Currents [\mu A/cm^{2}]';
 OtherCurrentTracesInfo.title = legend_strings;
 OtherCurrentTracesInfo.legend = {'I_{Na+}','I_{Kdr}','I_{NaP}','I_{A}'};
 
-% % INa Current:
-% [INaTracesInfo.lim] = fnFindSeriesBounds(time_t, INaTraces, false);
-% INaTracesInfo.xlabel = 'time (msec)';
-% INaTracesInfo.ylabel = 'I_{Na+} [\mu A/cm^{2}]';
-% INaTracesInfo.title = legend_strings;
-% 
-% % IKdr Current:
-% [IKdrTracesInfo.lim] = fnFindSeriesBounds(time_t, IKdrTraces, false);
-% IKdrTracesInfo.xlabel = 'time (msec)';
-% IKdrTracesInfo.ylabel = 'I_{Kdr} [\mu A/cm^{2}]';
-% IKdrTracesInfo.title = legend_strings;
-% 
-% % INaP Current:
-% [INaPTracesInfo.lim] = fnFindSeriesBounds(time_t, INaPTraces, false);
-% INaPTracesInfo.xlabel = 'time (msec)';
-% INaPTracesInfo.ylabel = 'I_{NaP} [\mu A/cm^{2}]';
-% INaPTracesInfo.title = legend_strings;
-% 
-% % IA Current:
-% [IATracesInfo.lim] = fnFindSeriesBounds(time_t, IATraces, false);
-% IATracesInfo.xlabel = 'time (msec)';
-% IATracesInfo.ylabel = 'I_{A} [\mu A/cm^{2}]';
-% IATracesInfo.title = legend_strings;
-
-
-% [FigH_MembraneVoltage] = fnPlotInteractiveSlider(time_t, voltageTraces, FigH_MembraneVoltage, K_Current_SeriesConfigs);
-
-%% Multi-voltage curve plots
-% Multi-subplot version:
+%% Multi-subplot version:
 
 if ProblemRunIndex == 1
+	searchPlotValues = [0.0, 0.4, 0.5, 1.2, 1.3, 1.5];
+elseif ProblemRunIndex == 2
 	searchPlotValues = [0.0, 0.4, 0.5, 1.2, 1.3, 1.5];
 else
 	searchPlotValues = [];
@@ -68,7 +47,15 @@ end
 % Find the indicies of the relevant values
 interestingPlotIndicies = zeros(length(searchPlotValues),1);
 for i=1:length(searchPlotValues)
-	found_indicies = find(abs(resultsTable.gM-searchPlotValues(i)) < 0.001);
+	if ProblemRunIndex == 1
+		found_indicies = find(abs(resultsTable.gM-searchPlotValues(i)) < 0.001);
+	elseif ProblemRunIndex == 2
+		found_indicies = find(abs(resultsTable.gNaP-searchPlotValues(i)) < 0.001);
+	else
+		error('Undefined case');
+	end
+
+	
 	interestingPlotIndicies(i) = found_indicies;
 end
 
@@ -131,7 +118,6 @@ base_export_path = '/Users/pho/Dropbox/Classes/Fall 2020/NSCI 613 - Neurophysiol
 should_export_fig = true;
 should_export_pdf = false;
 should_export_png = true;
-
 
 if ProblemRunIndex == 1
 	fnSaveFigureForExport(t, fullfile(base_export_path,'2-1'), should_export_fig, should_export_pdf, should_export_png);

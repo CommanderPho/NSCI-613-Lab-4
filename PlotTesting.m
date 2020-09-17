@@ -20,17 +20,19 @@ K_Current_SeriesConfigs.title = legend_strings;
 
 [FigH_MembraneVoltage] = fnPlotInteractiveSlider(time_t, voltageTraces, FigH_MembraneVoltage, K_Current_SeriesConfigs);
 
+% Other Ionic Currents:
+FigH_OtherIonicCurrents = figure(8);
+clf(FigH_OtherIonicCurrents)
+[OtherCurrentTracesInfo.lim] = fnFindSeriesBounds(time_t, [INaTraces, IKdrTraces, INaPTraces, IATraces], false);
+OtherCurrentTracesInfo.xlabel = 'time (msec)';
+OtherCurrentTracesInfo.ylabel = 'Other Ionic Currents [\mu A/cm^{2}]';
+OtherCurrentTracesInfo.title = legend_strings;
+OtherCurrentTracesInfo.legend = {'I_{Na+}','I_{Kdr}','I_{NaP}','I_{A}'};
 
-% 	figure(2)
-% 	plot(t,INa)
-% 	hold on
-% 	plot(t,IKdr)
-% 	plot(t,INaP)
-% 	plot(t,Iz)
-% 	plot(t,IA)
-% 	plot(tspan,[0 0],'k-')
-% 	legend('INa','IKdr','INaP','IKM', 'IKA', 'zero')
-% 	ylim([-5 5])
-% 	xlabel('time (msec)')
-% 	ylabel('ionic currents (microA/cm2)')
-% 	hold off
+numIterations = length(INaTraces);
+for i = 1:numIterations
+	curr_OtherIonicCurrents_data{i} = {INaTraces{i}, IKdrTraces{i}, INaPTraces{i}, IATraces{i}};
+end
+
+% curr_OtherIonicCurrents_data = {INaTraces, IKdrTraces, INaPTraces, IATraces};
+[FigH_OtherIonicCurrents] = fnPlotInteractiveSlider(time_t, curr_OtherIonicCurrents_data, FigH_OtherIonicCurrents, OtherCurrentTracesInfo);

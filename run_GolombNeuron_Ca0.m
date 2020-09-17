@@ -8,6 +8,7 @@
 % ProblemRunIndex = 1; % varying gM
 
 clear all;
+% ProblemRunIndex = 1; % varying gM
 ProblemRunIndex = 1; % varying gNaP
 
 % time span of simulation
@@ -164,7 +165,7 @@ end
 if ProblemRunIndex == 1
 	resultsTable = table(gM_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gM','spikeCounts','spikeFrequency_last'});
 elseif ProblemRunIndex == 2
-	resultsTable = table(gNaP_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gM','spikeCounts','spikeFrequency_last'});
+	resultsTable = table(gNaP_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gNaP','spikeCounts','spikeFrequency_last'});
 else
 	error('Unhandled')
 end
