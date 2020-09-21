@@ -7,7 +7,7 @@
 if ProblemRunIndex == 1
 	should_plot_other_ionic_currents = false;
 elseif ProblemRunIndex == 2
-	should_plot_other_ionic_currents = true;
+	should_plot_other_ionic_currents = false;
 else
 	error('Undefined case');
 end
@@ -26,7 +26,6 @@ voltageTracesInfo.xlabel = 'time [msec]';
 voltageTracesInfo.ylabel = 'V_{m} [mV]';
 voltageTracesInfo.title = legend_strings;
 	
-
 % Other Ionic Currents:
 [OtherCurrentTracesInfo.lim] = fnFindSeriesBounds(time_t, [INaTraces, IKdrTraces, INaPTraces, IATraces], false);
 OtherCurrentTracesInfo.xlabel = 'time (msec)';
@@ -34,12 +33,36 @@ OtherCurrentTracesInfo.ylabel = 'Other Ionic Currents [\mu A/cm^{2}]';
 OtherCurrentTracesInfo.title = legend_strings;
 OtherCurrentTracesInfo.legend = {'I_{Na+}','I_{Kdr}','I_{NaP}','I_{A}'};
 
+
+%% Build the Frequency Plot:
+fig_freqPlot = figure(1);
+clf(fig_freqPlot);
+hold off
+if ProblemRunIndex == 1
+	plot(resultsTable.gM, resultsTable.spikeFrequency_last); % Plot of gM vs. Frequency
+	xlabel('M-type K+ conductance gM')
+	title('Spike Frequency vs gM');
+	xlim([resultsTable.gM(1) resultsTable.gM(end)]);
+
+elseif ProblemRunIndex == 2
+	plot(resultsTable.gNaP, resultsTable.spikeFrequency_last); % Plot of gNaP vs. Frequency
+	xlabel('Persistent Na+ Conductance gNaP')
+	title('Spike Frequency vs gNaP');
+	xlim([resultsTable.gNaP(1) resultsTable.gNaP(end)]);
+else
+	error('Undefined case');
+end
+	
+ylabel('Spike Frequency [Hz]');
+
+
 %% Multi-subplot version:
 
 if ProblemRunIndex == 1
-	searchPlotValues = [0.0, 0.4, 0.5, 1.2, 1.3, 1.5];
+% 	searchPlotValues = [0.0, 0.4, 0.5, 1.2, 1.3];
+	searchPlotValues = [0.0, 0.4, 0.5, 0.6, 0.7, 1.2, 1.3];
 elseif ProblemRunIndex == 2
-	searchPlotValues = [0.0, 0.4, 0.5, 1.2, 1.3, 1.5];
+	searchPlotValues = [0.06, 0.07, 0.14, 0.2];
 else
 	searchPlotValues = [];
 end
@@ -55,22 +78,27 @@ for i=1:length(searchPlotValues)
 		error('Undefined case');
 	end
 
-	
 	interestingPlotIndicies(i) = found_indicies;
 end
+
+filteredResultsTable = resultsTable(interestingPlotIndicies,:);
+filteredISIs = spikeintervals(interestingPlotIndicies);
+
 
 % Do each plot:
 num_active_indices = length(interestingPlotIndicies);
 curr_voltage_strings = {};
 curr_sub_strings = {};
 
+fig_mainPlot = figure(2);
 % plot_mode = 'subplot';
 plot_mode = 'tiled';
 if should_plot_other_ionic_currents
-	t = tiledlayout(num_active_indices,3,'TileSpacing','compact');
+	t = tiledlayout(fig_mainPlot, num_active_indices,3,'TileSpacing','compact');
 else
-	t = tiledlayout(num_active_indices,2,'TileSpacing','compact');
+	t = tiledlayout(fig_mainPlot, num_active_indices,2,'TileSpacing','compact');
 end
+
 
 % Loop through the results
 for i=1:num_active_indices
@@ -97,6 +125,14 @@ for i=1:num_active_indices
 		[OtherCurrentTracesInfo] = fnPlotData(num_active_indices, i, active_i, OtherCurrentTracesInfo, curr_time_t_data, curr_OtherIonicCurrents_data, plot_mode, OtherCurrentTracesInfo.legend);
 	end
 	
+	
+% 	curr_ISI_data = spikeintervals{active_i};
+% 	figure
+% 	plot(curr_ISI_data)
+% 	
+% 	resultFrequencies(i) = resultsTable(active_i);
+	
+% 	spikeFrequency_last
 % 	OtherCurrentTracesInfos = {INaTracesInfo, IKdrTracesInfo, INaPTracesInfo, IATracesInfo};
 % 	[OtherCurrentTracesInfos] = fnPlotData(num_active_indices, i, active_i, OtherCurrentTracesInfos, curr_time_t_data, curr_Iz_data, plot_mode);
 	
@@ -113,16 +149,21 @@ end
 t.Padding = 'none';
 t.TileSpacing = 'none';
 
+
 base_export_path = '/Users/pho/Dropbox/Classes/Fall 2020/NSCI 613 - Neurophysiology and Computational Neuroscience/Lab 4/Results';
 
 should_export_fig = true;
+should_export_eps = false;
 should_export_pdf = false;
 should_export_png = true;
 
 if ProblemRunIndex == 1
-	fnSaveFigureForExport(t, fullfile(base_export_path,'2-1'), should_export_fig, should_export_pdf, should_export_png);
+	fnSaveFigureForExport(fig_mainPlot, fullfile(base_export_path,'2-1'), should_export_fig, should_export_eps, should_export_pdf, should_export_png);
+	fnSaveFigureForExport(fig_freqPlot, fullfile(base_export_path,'2-2'), should_export_fig, should_export_eps, should_export_pdf, should_export_png);
 elseif ProblemRunIndex == 2
-	fnSaveFigureForExport(t, fullfile(base_export_path,'2-2'), should_export_fig, should_export_pdf, should_export_png);
+	fnSaveFigureForExport(fig_mainPlot, fullfile(base_export_path,'3-1'), should_export_fig, should_export_eps, should_export_pdf, should_export_png);
+	fnSaveFigureForExport(fig_freqPlot, fullfile(base_export_path,'3-2'), should_export_fig, should_export_eps, should_export_pdf, should_export_png);
+	
 else
 	error('Undefined case');
 end
@@ -171,8 +212,11 @@ function [tracesInfo] = fnPlotData(num_active_indices, i, active_i, tracesInfo, 
 
 end
 
-function [export_result] = fnSaveFigureForExport(fig_h, figPath, should_export_fig, should_export_pdf, should_export_png)
+function [export_result] = fnSaveFigureForExport(fig_h, figPath, should_export_fig, should_export_eps, should_export_pdf, should_export_png)
 	% fnSaveFigureForExport: performs export to disk of a provided figure.
+	% Position the figure:
+% 	fig_h.Parent.OuterPosition = [0 0 4 6];
+	
 	% Default values for optional parameters
 	if ~exist('should_export_fig','var')
 		should_export_fig = true;
@@ -180,8 +224,12 @@ function [export_result] = fnSaveFigureForExport(fig_h, figPath, should_export_f
 	if ~exist('should_export_png','var')
 		should_export_png = false;
 	end
+	if ~exist('should_export_eps','var')
+		should_export_eps = true;
+	end
 	if ~exist('should_export_pdf','var')
 		should_export_pdf = true;
+		enable_vector_pdf_output = false; % Explicitly enable vector PDF output if that's desired. It's very slow
 	end
 	
 
@@ -195,10 +243,20 @@ function [export_result] = fnSaveFigureForExport(fig_h, figPath, should_export_f
 		% Requires R2020a or later
 		exportgraphics(fig_h, export_result.png,'Resolution',300)
 	end
+	
+	if should_export_eps
+		export_result.eps = [figPath '.eps'];
+		exportgraphics(fig_h, export_result.eps)
+	end
+	
 	if should_export_pdf
 		export_result.pdf = [figPath '.pdf'];
 		% Requires R2020a or later
-		exportgraphics(fig_h, export_result.pdf,'ContentType','vector');
+		if enable_vector_pdf_output
+			exportgraphics(fig_h, export_result.pdf,'ContentType','vector','BackgroundColor','none');
+		else
+			exportgraphics(fig_h, export_result.pdf,'BackgroundColor','none');
+		end
 	end
 
 end

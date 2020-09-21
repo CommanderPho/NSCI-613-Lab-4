@@ -9,7 +9,7 @@
 
 clear all;
 % ProblemRunIndex = 1; % varying gM
-ProblemRunIndex = 1; % varying gNaP
+ProblemRunIndex = 2; % varying gNaP
 
 % time span of simulation
 tspan = [0 2000];
@@ -35,7 +35,7 @@ if ProblemRunIndex == 1
 	num_iterations = length(gM_vec);
 elseif ProblemRunIndex == 2
 	gM = 1; % M-type K+ conductance
-	gNaP_vec = 0:0.1:1.5; % persistent Na+ conductance
+	gNaP_vec = 0:0.01:0.7; % persistent Na+ conductance
 	num_iterations = length(gNaP_vec);
 else
 	error('Unhandled')
@@ -44,6 +44,8 @@ end
 % Pre-allocate:
 spikeFrequency_last = zeros(num_iterations, 1);
 spikeCounts = zeros(num_iterations, 1);
+
+
 
 for i = 1:num_iterations
 	
@@ -75,17 +77,17 @@ for i = 1:num_iterations
 
 	% determine spike times and interspike intervals
 	[peaks, indxs]=findpeaks(VVs,'MINPEAKHEIGHT',-10);
-	spiketimes=t(indxs);
-	spikeintervals=diff(spiketimes);
-	spikeCounts(i) = length(spiketimes);
+	spikeTimes{i}=t(indxs);
+	spikeintervals{i}=diff(spikeTimes{i});
+	spikeCounts(i) = length(spikeTimes{i});
 	
 	% Compute Frequency:
 	% IPI: Inter-peak interval: the duration (in [ms]) between the peaks times.
 	% ISI: Inter-spike interval: the duration (in [ms]) between the spike times.
-	if ~isempty(spikeintervals)
+	if ~isempty(spikeintervals{i})
 		% Using Two Computation Styles:
 		% 1) Dr. Booth uses the last IPI to define the frequency, so I've added this as an alternative frequency metric.
-		last_IPI_seconds = spikeintervals(end) / 1000; % Divide by 1000 to convert from [ms] to [sec]
+		last_IPI_seconds = spikeintervals{i}(end) / 1000; % Divide by 1000 to convert from [ms] to [sec]
 		spikeFrequency_last(i) = 1 ./ last_IPI_seconds;
 	else
 		spikeFrequency_last(i) = NaN;
@@ -124,43 +126,9 @@ for i = 1:num_iterations
 	INaPTraces{i} = INaP;
 	IATraces{i} = IA;
 	
-% 	{INaTraces, IKdrTraces, INaPTraces, IATraces}
-	
-% 	% plot Voltage vs time
-% 	figure(1)
-% 	hold on;
-% 	plot(t,VVs,spiketimes,peaks,'*')
-% 	xlabel('time (msec)')
-% 	ylabel('membrane voltage (mV)')
-% 	title(curr_description_string);
-	
-% 	
-% 	figure(2)
-% 	plot(t,INa)
-% 	hold on
-% 	plot(t,IKdr)
-% 	plot(t,INaP)
-% 	plot(t,Iz)
-% 	plot(t,IA)
-% 	plot(tspan,[0 0],'k-')
-% 	legend('INa','IKdr','INaP','IKM', 'IKA', 'zero')
-% 	ylim([-5 5])
-% 	xlabel('time (msec)')
-% 	ylabel('ionic currents (microA/cm2)')
-% 	hold off
-% 
-
-% 	figure(3)
-% 	plot(t,Iz)
-% 	xlabel('time (msec)')
-% 	ylabel('M-type K+ current (microA/cm2)')
-% 	title(curr_description_string);
-% 	hold on
-
 end
 
 % Build a table from the results for easy browsing of the different variables as a function of iteration and current.
-
 
 if ProblemRunIndex == 1
 	resultsTable = table(gM_vec', spikeCounts, spikeFrequency_last,'VariableNames',{'gM','spikeCounts','spikeFrequency_last'});
@@ -170,46 +138,3 @@ else
 	error('Unhandled')
 end
 
-
-% figure(4)
-% hold off
-% 
-% figure(5)
-% hold off
-% 
-% for i = 1:num_iterations
-% % 	curr_description_string = sprintf('M-type K+ conductance gM = %f', gM_vec(i)); % M-type K+ conductance
-% % 	curr_description_string = sprintf('gM: %.2g', gM_vec(i)); % M-type K+ conductance
-% % 	legend_strings{i} = curr_description_string;
-% 	
-% % 	iteration_range = (i * ones([size(time_t{i},1), 5]));
-% 	iteration_range = (i * ones(size(time_t{i})));
-% 
-% 	figure(4)
-% 	plot3(time_t{i}, iteration_range, voltageTraces{i},'MarkerFaceColor','auto');
-% 	hold on;
-% 	
-% 	figure(5)
-% 	plot3(time_t{i}, iteration_range, IzTraces{i},'MarkerFaceColor','auto');
-% 	hold on;
-% 
-% end
-% 
-% figure(4)
-% xlabel('time (msec)')
-% ylabel('membrane voltage (mV)')
-% zlabel('M-type K+ conductance gM')
-% legend(legend_strings)
-% title('Membrane Voltage Plot for varied gM')
-% 
-% figure(5)
-% xlabel('time (msec)')
-% ylabel('M-type K+ current (microA/cm2)')
-% zlabel('M-type K+ conductance gM')
-% legend(legend_strings)
-% title('M-type K+ current Plot for varied gM')
-
-% 
-% figure(4)
-% hold on
-% plot(t,gM*zzs)
