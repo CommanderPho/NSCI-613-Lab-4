@@ -25,7 +25,16 @@ voltageTracesInfo.xlabel = 'time [msec]';
 % voltageTracesInfo.ylabel = 'membrane voltage [mV]';
 voltageTracesInfo.ylabel = 'V_{m} [mV]';
 voltageTracesInfo.title = legend_strings;
-	
+
+% Combined M-type K+ Current and Persistent Na+ Currents:
+[CombinedCurrentTracesInfo.lim] = fnFindSeriesBounds(time_t, [IzTraces, INaPTraces], false);
+CombinedCurrentTracesInfo.xlabel = 'time (msec)';
+CombinedCurrentTracesInfo.ylabel = 'Combined Ionic Currents [\mu A/cm^{2}]';
+CombinedCurrentTracesInfo.title = legend_strings;
+CombinedCurrentTracesInfo.legend = {'I_{MK+}','I_{NaP}'};
+
+
+
 % Other Ionic Currents:
 [OtherCurrentTracesInfo.lim] = fnFindSeriesBounds(time_t, [INaTraces, IKdrTraces, INaPTraces, IATraces], false);
 OtherCurrentTracesInfo.xlabel = 'time (msec)';
@@ -81,6 +90,7 @@ for i=1:length(searchPlotValues)
 	interestingPlotIndicies(i) = found_indicies;
 end
 
+% Generate filtered results:
 filteredResultsTable = resultsTable(interestingPlotIndicies,:);
 filteredISIs = spikeintervals(interestingPlotIndicies);
 
@@ -107,20 +117,32 @@ for i=1:num_active_indices
 	curr_time_t_data = time_t{active_i};
 	curr_Vm_data = voltageTraces{active_i};
 	curr_Iz_data = IzTraces{active_i};
-	
-	% {INaTraces, IKdrTraces, INaPTraces, IATraces}
+
 	if should_plot_other_ionic_currents
 		curr_OtherIonicCurrents_data = {INaTraces{active_i}, IKdrTraces{active_i}, INaPTraces{active_i}, IATraces{active_i}};
 	end
 
 	%% Plot the current data
-	
 	voltageTracesInfo.title{active_i} = sprintf('%s for (%s)', 'Membrane Voltage', legend_strings{active_i});
 	IzTracesInfo.title{active_i} = sprintf('%s for (%s)', 'M-type K+ Current', legend_strings{active_i});
 	
 	[voltageTracesInfo] = fnPlotData(num_active_indices, i, active_i, voltageTracesInfo, curr_time_t_data, curr_Vm_data, plot_mode);
-	[IzTracesInfo] = fnPlotData(num_active_indices, i, active_i, IzTracesInfo, curr_time_t_data, curr_Iz_data, plot_mode);
+	
+	
+	if ProblemRunIndex == 1
+		% Problem 1 Mode Only:
+		[IzTracesInfo] = fnPlotData(num_active_indices, i, active_i, IzTracesInfo, curr_time_t_data, curr_Iz_data, plot_mode);
 
+	elseif ProblemRunIndex == 2
+		% Problem 2 Mode Only:
+		CombinedCurrentTracesInfo.title{active_i} = sprintf('%s for (%s)', 'Combined Currents', legend_strings{active_i});
+		curr_CombinedCurrents_data = {curr_Iz_data, INaPTraces{active_i}};
+		[CombinedCurrentTracesInfo] = fnPlotData(num_active_indices, i, active_i, CombinedCurrentTracesInfo, curr_time_t_data, curr_CombinedCurrents_data, plot_mode, CombinedCurrentTracesInfo.legend);
+	else
+		error('Invalid!')
+	end
+
+	% Plots the extra ionic currents as an additional column.
 	if should_plot_other_ionic_currents
 		[OtherCurrentTracesInfo] = fnPlotData(num_active_indices, i, active_i, OtherCurrentTracesInfo, curr_time_t_data, curr_OtherIonicCurrents_data, plot_mode, OtherCurrentTracesInfo.legend);
 	end
