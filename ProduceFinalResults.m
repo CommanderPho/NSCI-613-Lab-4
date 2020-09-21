@@ -163,7 +163,16 @@ for i=1:num_active_indices
 end
 
 linkaxes(voltageTracesInfo.ax_handle,'x');
-linkaxes(IzTracesInfo.ax_handle,'x');
+
+if ProblemRunIndex == 1
+	linkaxes(IzTracesInfo.ax_handle,'x');
+elseif ProblemRunIndex == 2
+	linkaxes([voltageTracesInfo.ax_handle, CombinedCurrentTracesInfo.ax_handle],'x');
+	linkaxes(CombinedCurrentTracesInfo.ax_handle,'xy');
+else
+	error('Invalid!')
+end
+	
 if should_plot_other_ionic_currents
 	linkaxes(OtherCurrentTracesInfo.ax_handle,'x');
 end

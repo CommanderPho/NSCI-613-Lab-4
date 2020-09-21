@@ -193,7 +193,7 @@ Gate Var. & Shift Dir & Consequence \\ \hline
 \end{figure}
 
 % gM Voltage Spiking
-\begin{table}                                                                         
+\begin{table}[H]                                                                         
 \centering                                                                            
 \begin{tabular}{|l|l|l|}                                                              
 \hline                                                                                
@@ -219,7 +219,7 @@ gM & Membrane Voltage Curve Observations & $\text{Freq}_{\text{spike}}$ \\
 \end{table}                                                                           
 
 % gM Current Spiking                                       
-\begin{table}                                                                         
+\begin{table}[H]                                                                         
 \centering                                                                            
 \begin{tabular}{|l|l|l|}                                                              
 \hline                                                                                
@@ -248,7 +248,7 @@ gM & M-Type K+ Current Curve Observations \\
 
 \subQuestion{Interaction of Ionic Currents}
 
-\slntParagraph{Within the observed region, the M-type K+ current was the primary determinant of the spiking frequency for the membrane voltage. A strong overall trend was observed where increasing $gM$ resulted in a decrease in firing frequency.}
+\slntParagraph{Within the observed region, the M-type K+ current ($\sub{I}{MK+}$) was the primary determinant of the spiking frequency for the membrane voltage. A strong overall trend was observed where increasing $gM$ resulted in a decrease in firing frequency. A strange discontinuity is observed where the spiking}
 
 
 %\slntParagraph{
@@ -292,19 +292,19 @@ gM & M-Type K+ Current Curve Observations \\
 %\caption{\label{Fig:3} Plots for $\mgate{} = 7 \utext{mV}$, $\hgate{} = -9.5 \utext{mV}$, $\ngate{} = 0 \utext{mV}$ used to determine the threshold current amplitude of $0.6 \utext{nA}$ for Nav 1.1.}
 %\end{figure}
 
-\begin{table}                
+\begin{table}[H]                
 \centering                   
 \begin{tabular}{|c|l|c|}       
 \hline                       
 gNaP & Observation & $\text{Freq}_{\text{burst}}$ \\
 \hline                       
-0.060 & Last single spiking regime & 10.381 \\            
+0.060 & Last single (1) spiking regime & 10.381 \\            
 \hline                       
-0.070 & full pair spiking & 9.275 \\             
+0.070 & full pair (2) spiking & 9.275 \\             
 \hline                       
-0.140 & full triple spiking & 53.171 \\            
+0.140 & full triple (3) spiking & 53.171 \\            
 \hline                       
-0.200 & full quadruple spiking & 73.125 \\            
+0.200 & full quadruple (4) spiking & 73.125 \\            
 \hline                       
 \end{tabular}                
 \caption{Table Containing the Relevant Burst Frequencies at the Transition gNaP values.}     
@@ -329,6 +329,7 @@ gNaP & Observation & $\text{Freq}_{\text{burst}}$ \\
 
 \subQuestion{Interaction of Persistent Na+ current and M-type K+ current}
 
+\slntParagraph{The increasing gNaP values serve to increase the magnitude of the $\sub{I}{NaP}$, which works to keep the neuron depolarized immediately after spiking, making it more likely that another spike will occur (creating a burst). On the other hand, $\sub{I}{MK+}$ serves to terminate bursting and reset the neuron back to its resting potential so it may burst again more quickly.  }
 
 
 \end{document}
